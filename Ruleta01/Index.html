@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="js/TweenMax.min.js"></script>
+    <script src="js/Winwheel.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+<body style="background:#329EA7;display:flex">
+    <div style="color:wheat">
+        <h1>Registro Usuarios</h1>
+        <h4 style="color:red">* Deben haber registrados minimo 3 usuarios</h4>
+        Nombre:<input id="name" style="margin:4px;border-radius:4px" type="text"><br><br>
+        Apuesta:<input id="bet" style="margin:4px;border-radius:4px" type="text"><br><br>
+        Numero:<input id="number" style="margin:4px;border-radius:4px" type="text"><br><br>
+        <button style="background:#ff6a00;border-radius:10px;height:30px;width:100px;color:white" onclick="register()">Registrar</button><br><br>
+        <table class="egt">
+            <thead style="background:#C1E9B7;color:black; border: 1px solid rgba(200, 100, 0, 0.3);">
+                <tr>
+                    <th>Usuario</th>
+                    <th>Apuesta</th>
+                    <th>Numero</th>
+                </tr>
+            </thead>
+            <tbody id="users" style="background:#E9B7CC;color:black; border: 1px solid rgba(100, 200, 0, 0.3);"></tbody>
+        </table>
+    </div>
+    <br />
+    <input id="turn" style="background:#1A9239;border-radius:10px;height:30px;width:100px;color:white;display:none" type="button" value="Girar" onclick="myRoulette.startAnimation();" />
+    <br />
+    <br />
+    <canvas id="canvas" height="400" width="400"></canvas>
+    <table class="egt">
+        <thead style="background:#848CDE; border: 1px solid rgba(200, 100, 0, 0.3);">
+            <tr>
+                <th>Ruleta</th>
+                <th>Numero</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody id="tableOne" style="background:#DE84D4; border: 1px solid rgba(100, 200, 0, 0.3);"></tbody>
+    </table>
+    <table class="egt">
+        <thead style="background:#84D0DE;color:black; border: 1px solid rgba(200, 100, 0, 0.3);">
+            <tr>
+                <th>Usuario</th>
+                <th>Apuesta</th>
+                <th>Numero</th>
+            </tr>
+        </thead>
+        <tbody id="totalUsers" style="background:#849EDE;color:black; border: 1px solid rgba(100, 200, 0, 0.3);"></tbody>
+    </table>
+
+    <script>
+        var cont = 0;
+        var cont2 = 0;
+        var row = "";
+        var rowUser = "";
+        var totalRowUser = "";
+        var myRoulette = new Winwheel({
+            'numSegments': 37,
+            'outerRadius': 180,
+            'segments': [
+                { 'fillStyle': '#1A9239', 'text': '0' },
+                { 'fillStyle': '#FF0000', 'text': '32' },
+                { 'fillStyle': '#2B2C2B', 'text': '15' },
+                { 'fillStyle': '#FF0000', 'text': '19' },
+                { 'fillStyle': '#2B2C2B', 'text': '4' },
+                { 'fillStyle': '#FF0000', 'text': '21' },
+                { 'fillStyle': '#2B2C2B', 'text': '2' },
+                { 'fillStyle': '#FF0000', 'text': '25' },
+                { 'fillStyle': '#2B2C2B', 'text': '17' },
+                { 'fillStyle': '#FF0000', 'text': '34' },
+                { 'fillStyle': '#2B2C2B', 'text': '6' },
+                { 'fillStyle': '#FF0000', 'text': '27' },
+                { 'fillStyle': '#2B2C2B', 'text': '13' },
+                { 'fillStyle': '#FF0000', 'text': '36' },
+                { 'fillStyle': '#2B2C2B', 'text': '11' },
+                { 'fillStyle': '#FF0000', 'text': '30' },
+                { 'fillStyle': '#2B2C2B', 'text': '8' },
+                { 'fillStyle': '#FF0000', 'text': '23' },
+                { 'fillStyle': '#2B2C2B', 'text': '10' },
+                { 'fillStyle': '#FF0000', 'text': '5' },
+                { 'fillStyle': '#2B2C2B', 'text': '24' },
+                { 'fillStyle': '#FF0000', 'text': '16' },
+                { 'fillStyle': '#2B2C2B', 'text': '33' },
+                { 'fillStyle': '#FF0000', 'text': '1' },
+                { 'fillStyle': '#2B2C2B', 'text': '20' },
+                { 'fillStyle': '#FF0000', 'text': '14' },
+                { 'fillStyle': '#2B2C2B', 'text': '31' },
+                { 'fillStyle': '#FF0000', 'text': '9' },
+                { 'fillStyle': '#2B2C2B', 'text': '22' },
+                { 'fillStyle': '#FF0000', 'text': '18' },
+                { 'fillStyle': '#2B2C2B', 'text': '29' },
+                { 'fillStyle': '#FF0000', 'text': '7' },
+                { 'fillStyle': '#2B2C2B', 'text': '28' },
+                { 'fillStyle': '#FF0000', 'text': '12' },
+                { 'fillStyle': '#2B2C2B', 'text': '35' },
+                { 'fillStyle': '#FF0000', 'text': '3' },
+                { 'fillStyle': '#2B2C2B', 'text': '26' }
+            ],
+            'animation': {
+                'type': 'spinToStop',
+                'duration': 5,
+                'callbackFinished': 'Message()',
+                'callbackAfter': 'drawIndicator()'
+            }
+        });
+        function Message() {
+            var SegmentoSeleccionado = myRoulette.getIndicatedSegment();
+            swal({
+                title: "Numero",
+                text: SegmentoSeleccionado.text,
+                icon: "success"
+            });
+            myRoulette.stopAnimation(false);
+            myRoulette.rotationAngle = 0;
+            document.getElementById('turn').style.display = 'none';
+            save(SegmentoSeleccionado.text);
+            users.innerHTML = "";
+            rowUser = "";
+            cont2 = 0;
+        }
+        drawIndicator();
+        function drawIndicator() {
+            var ctx = myRoulette.ctx;
+            ctx.strokeStyle = 'navy';
+            ctx.fillStyle = '#FAFA16';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(170, 0);
+            ctx.lineTo(230, 0);
+            ctx.lineTo(200, 40);
+            ctx.lineTo(171, 0);
+            ctx.stroke();
+            ctx.fill();
+        }
+        function save(value) {
+            var val = value;
+            cont = cont + 1;
+            row = row + "<tr><td>" + cont + "</td><td>" + val + "</td><td>Cerrada</td></tr>";
+            document.getElementById("tableOne").innerHTML = row;
+        }
+        function register() {
+            var _name = document.getElementById("name").value;
+            var _bet = document.getElementById("bet").value;
+            var _number = document.getElementById("number").value;
+            if (_name.trim() === '') {
+                swal({
+                    title: "Ingrese el nombre del usuario",
+                    icon: "error"
+                });
+            } else if (_bet.trim() === '') {
+                swal({
+                    title: "Ingrese el valor de la apuesta",
+                    icon: "error"
+                });
+            } else if (parseInt(_bet) > 10000 || parseInt(_bet) < 1) {
+                swal({
+                    title: "El valor debe estar entre 1 y 10000 dolares",
+                    icon: "error"
+                });
+                _bet = "";
+            } else if (_number.trim() === '') {
+                swal({
+                    title: "Ingrese el numero a apostar",
+                    icon: "error"
+                });
+            } else if (parseInt(_number) > 36 || parseInt(_number) < 0) {
+                swal({
+                    title: "El numero debe estar entre 0 y 36",
+                    icon: "error"
+                });
+                _number = "";
+            } else {
+                cont2 = cont2 + 1;
+                rowUser = rowUser + "<tr><td>" + _name + "</td><td>" + _bet + "</td><td>" + _number + "</td></tr>";
+                totalRowUser = totalRowUser + "<tr><td>" + _name + "</td><td>" + _bet + "</td><td>" + _number + "</td></tr>";
+                document.getElementById("users").innerHTML = rowUser;
+                document.getElementById("totalUsers").innerHTML = totalRowUser;
+                document.getElementById("name").value = "";
+                document.getElementById("bet").value = "";
+                document.getElementById("number").value = "";
+                if (cont2 >= 3) {
+                    document.getElementById('turn').style.display = 'block';
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
